@@ -1,0 +1,37 @@
+<div class="flex flex-col justify-between justify-items-center m-8 w-2/3">
+  <%= if @name == nil do %>
+    <div class="h-1/6">
+      <.chatbot_form form={@form} event={"save"} key={:name} button="Proceed" placeholder={"Enter your name"} />
+    </div>
+  <% else %>
+    <div class="h-5/6 mb-4 ">
+      <fieldset disabled={true}>
+        <%= for {tag, msg} <- @conversations do %>
+          <%= if tag == :chatbot do %>
+            <div class="flex flex-col bg-gray-50 p-4">
+              <i class='fas fa-robot' style='font-size:24px;color:grey'></i>              
+              <%= raw(msg) %>
+            </div>
+          <% end %>
+
+          <%= if tag == :user do %>
+            <div class="flex flex-col w-full justify-items-end bg-primary-200 p-4">
+              <div class="flex"><i class="fas fa-user mr-2"></i><%= @name %></div>
+              <%= raw(msg) %>
+            </div>
+          <% end %>
+        <% end %>
+      </fieldset>
+
+      <%= raw(@next_operation) %>
+    </div>
+
+    <div class="h-1/6">
+      <%= if @next_operation != "close" do %>
+        <fieldset disabled={@disabled}>
+          <.chatbot_form form={@form} event={"search"} key={:search} button="Search" option={""} />
+        </fieldset>
+      <% end %>
+    </div>
+  <% end %>
+</div>

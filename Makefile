@@ -12,7 +12,6 @@ develop: deps.get
 
 .PHONY: test
 test: deps.get
-	MIX_ENV=test mix ecto.drop
 	mix test
 
 .PHONY: lint

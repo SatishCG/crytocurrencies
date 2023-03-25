@@ -16,3 +16,11 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+
+## DEV
+
+make develop  (local development)
+make lint     (remove all linter warnnings)
+make test     (to run testcases)
+
+

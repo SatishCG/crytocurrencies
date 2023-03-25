@@ -3,7 +3,8 @@ defmodule CrytocurrenciesWeb.Live.Chatbot.Index do
 
   use CrytocurrenciesWeb, :live_view
 
-  alias Pois
+  alias Crytocurrencies.Context.CoinGeko
+  alias Poision
 
   @impl true
   def mount(_params, _session, socket) do
@@ -86,7 +87,7 @@ defmodule CrytocurrenciesWeb.Live.Chatbot.Index do
   def handle_event("get_last_14day_data_" <> coin_id, _param, socket) do
     %{conversations: conversations, next_operation: next_operation} = socket.assigns
 
-    response = parse_status("get_last_14day_data", fetch_data("get_last_14day_data", coin_id))
+    response = parse_status("get_last_14day_data", CoinGeko.fetch_data("get_last_14day_data", coin_id))
 
     result = [
       {:chatbot, next_operation},
@@ -119,7 +120,7 @@ defmodule CrytocurrenciesWeb.Live.Chatbot.Index do
     socket =
       case operation do
         "search_by_name" ->
-          response = parse_status(operation, fetch_data(operation, search))
+          response = parse_status(operation, CoinGeko.fetch_data(operation, search))
           conversations = conversations ++ [{:user, "<div>searching #{search}</div>"}]
 
           case response do
@@ -135,7 +136,7 @@ defmodule CrytocurrenciesWeb.Live.Chatbot.Index do
           end
 
         "search_by_id" ->
-          response = parse_status(operation, fetch_data(operation, search))
+          response = parse_status(operation, CoinGeko.fetch_data(operation, search))
 
           case response do
             {:ok, response} ->
@@ -237,30 +238,5 @@ defmodule CrytocurrenciesWeb.Live.Chatbot.Index do
         <%= submit("Proceed", class: " px-8 py-2 bg-primary-100 disabled:bg-gray-100") %>
       </.form>
     """
-  end
-
-  def fetch_data(operation, value) do
-    url =
-      case operation do
-        "search_by_name" ->
-          "https://api.coingecko.com/api/v3/search?query=#{value}"
-
-        "search_by_id" ->
-          "https://api.coingecko.com/api/v3/coins/#{value}"
-
-        "get_last_14day_data" ->
-          "https://api.coingecko.com/api/v3/coins/#{value}/market_chart?vs_currency=usd&days=14&interval=24"
-      end
-
-    case HTTPoison.get(url, [], timeout: 50_000, recv_timeout: 50_000) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, Poison.decode!(body)}
-
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
-        {:error, "Not found #{value} details :("}
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, "Sorry, Ooops something went wrong!!!", reason}
-    end
   end
 end
